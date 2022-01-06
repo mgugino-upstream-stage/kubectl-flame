@@ -13,7 +13,8 @@ import (
 const (
 	containertmp = "/app/containertmp.sh"
 	dntrace      = "/app/dotnet-trace"
-	flameout     = "/tmp/trace.ss"
+	flameout     = "/tmp/trace"
+	ssfile       = "/tmp/trace.speedscope.json"
 )
 
 type DotNetProfiler struct{}
@@ -46,7 +47,7 @@ func (p *DotNetProfiler) Invoke(job *details.ProfilingJob) error {
 	}
 	// Run dotnet trace
 	// /app/dotnet-trace collect -p 1
-	cmd2 := exec.Command(dntrace, "--format", "Speedscope", "-p", "1", "-o", flameout)
+	cmd2 := exec.Command(dntrace, "collect", "--format", "Speedscope", "-p", "1", "-o", flameout)
 	cmd2.Env = os.Environ()
 	cmd2.Env = append(cmd.Env, "TMPDIR=/app/tmp")
 
@@ -59,6 +60,7 @@ func (p *DotNetProfiler) Invoke(job *details.ProfilingJob) error {
 	time.Sleep(job.Duration)
 	// Send sigint
 	err = cmd2.Process.Signal(os.Interrupt)
+	// TODO: catch return signal of dntrace
 	if err != nil {
 		// If the above fails, we'll leak the process, but we're stopping anyway.
 		return err
@@ -67,5 +69,5 @@ func (p *DotNetProfiler) Invoke(job *details.ProfilingJob) error {
 	// TODO: maybe set a timeout channel for this.
 	cmd2.Wait()
 
-	return utils.PublishFlameGraph(flameout)
+	return utils.PublishFlameGraph(ssfile)
 }
