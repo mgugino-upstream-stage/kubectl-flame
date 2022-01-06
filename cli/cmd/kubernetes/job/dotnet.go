@@ -100,9 +100,6 @@ func (p *dotnetCreator) create(targetPod *apiv1.Pod, cfg *data.FlameConfig) (str
 							},
 							SecurityContext: &apiv1.SecurityContext{
 								Privileged: boolPtr(true),
-								Capabilities: &apiv1.Capabilities{
-									Add: []apiv1.Capability{"SYS_PTRACE"},
-								},
 							},
 							Resources: resources,
 						},

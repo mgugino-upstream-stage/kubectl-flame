@@ -35,6 +35,8 @@ func main() {
 	err = api.PublishEvent(api.Progress, &api.ProgressData{Time: time.Now(), Stage: api.Ended})
 	handleError(err)
 
+
+
 	<-done
 }
 
@@ -81,6 +83,7 @@ func handleSignals() chan bool {
 func handleError(err error) {
 	if err != nil {
 		api.PublishError(err)
+		time.Sleep(1000 * time.Second)
 		os.Exit(1)
 	}
 }
