@@ -22,6 +22,7 @@ var (
 	bpf    = bpfCreator{}
 	python = pythonCreator{}
 	ruby   = rubyCreator{}
+	dotnet = dotnetCreator{}
 )
 
 type creator interface {
@@ -38,6 +39,8 @@ func Create(targetPod *apiv1.Pod, cfg *data.FlameConfig) (string, *batchv1.Job, 
 		return python.create(targetPod, cfg)
 	case api.Ruby:
 		return ruby.create(targetPod, cfg)
+	case api.DotNet:
+		return dotnet.create(targetPod, cfg)
 	}
 
 	// Should not happen
